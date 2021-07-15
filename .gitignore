@@ -341,3 +341,6 @@ healthchecksdb
 
 # Ignore Libs folder
 Libs/*
+
+#Ignore Pics Folder
+Pics/*

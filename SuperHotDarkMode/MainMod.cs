@@ -18,12 +18,6 @@ namespace SuperHotDarkMode
 
         
 
-        byte[] gradBytes;
-        static Texture2D grad2d = new Texture2D(1024, 1024);
-
-
-        byte[] concBytes;
-        static Texture2D conc2d = new Texture2D(1024, 1024);
 
         static Texture2D MainTex = new Texture2D(2, 2);
         Color DarkModeColor;
@@ -41,10 +35,7 @@ namespace SuperHotDarkMode
         
         void Start()
         {
-            gradBytes = System.IO.File.ReadAllBytes("./BepInEx/plugins/Assets/darkCrystalGradientMap.png");
-            grad2d.LoadImage(gradBytes);
-            concBytes = System.IO.File.ReadAllBytes("./BepInEx/plugins/Assets/darkCrystalGradientMap.png");
-            conc2d.LoadImage(concBytes);
+          
 
             ColorUtility.TryParseHtmlString("#222222", out DarkModeColor);
             ColorUtility.TryParseHtmlString("#666666", out LighterDarkModeColor);

@@ -5,20 +5,22 @@ using System.Text;
 using BepInEx;
 using BepInEx.Harmony;
 using UnityEngine;
+using SuperhotModList;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+
 
 using HarmonyLib;
 namespace SuperHotDarkMode
 {
+    [BepInDependency("SHModList", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin("ghostfire042.SHDarkmode", "SuperHot Darkmode", "1.0")]
-    public class MainMod : BaseUnityPlugin
+    public class MainMod : BaseUnityPlugin, IToggleableMod
     {
 
 
-        
 
 
+        static bool mod_enabled = true;
         static Texture2D MainTex = new Texture2D(2, 2);
         Color DarkModeColor;
 
@@ -26,11 +28,6 @@ namespace SuperHotDarkMode
         Color LighterDarkModeColor;
 
         Harmony hw = new Harmony("mainOne");
-        void Update()
-        {
-            Logger.LogError(SHGUI.current.forgroundText.text);
-            
-        }
 
         
         void Start()
@@ -74,30 +71,33 @@ namespace SuperHotDarkMode
             private static void Postfix(ref GameObject ___SpawnedGameObject)
             {
                 GameObject body = ___SpawnedGameObject.transform.GetChild(7).gameObject;
-                
-               
+
+
                 /*GameObject _TorsoTemp = body.transform.GetChild(8).gameObject;
 
                 Material m = _TorsoTemp.GetComponent<SkinnedMeshRenderer>().sharedMaterial;
                 m.SetVector("_Color", new Vector4(0, .7f, 0, 1));
                 _TorsoTemp.GetComponent<SkinnedMeshRenderer>().material = m;*/
-
-                foreach(Renderer r in body.GetComponentsInChildren<Renderer>(true))
+                if (mod_enabled)
                 {
-                    Vector4 color = new Vector4(.3f, .5f, .4f, 1);
-                    var mat = r.sharedMaterial;
-                    mat.SetVector("_EmissionColor", color);
-                    mat.SetVector("_Color", color);
-                    mat.SetVector("_SpecColor", new Vector4(.1f, .1f, .1f));
-                    mat.SetVector("_StripeFocusColor", Color.white);
-                    mat.SetVector("_SuperSpecColor", new Vector4(.1f, .1f, .1f));
-                    mat.SetVector("_PrimaryRimColor", new Vector4(.1f, .1f, .1f));
+                    foreach (Renderer r in body.GetComponentsInChildren<Renderer>(true))
+                    {
+                        Vector4 color = new Vector4(.3f, .5f, .4f, 1);
+                        var mat = r.sharedMaterial;
+                        mat.SetVector("_EmissionColor", color);
+                        mat.SetVector("_Color", color);
+                        mat.SetVector("_SpecColor", new Vector4(.1f, .1f, .1f));
+                        mat.SetVector("_StripeFocusColor", Color.white);
+                        mat.SetVector("_SuperSpecColor", new Vector4(.1f, .1f, .1f));
+                        mat.SetVector("_PrimaryRimColor", new Vector4(.1f, .1f, .1f));
 
 
-                    mat.SetTexture("_MainTex", LighterMainTex);
-                    mat.SetFloat("_SuperSpecularPower", .5f);
-                    mat.SetFloat("_SpecularPower", .5f);
+                        mat.SetTexture("_MainTex", LighterMainTex);
+                        mat.SetFloat("_SuperSpecularPower", .5f);
+                        mat.SetFloat("_SpecularPower", .5f);
+                    }
                 }
+                
                 /*foreach(RendererWrapper r in body.GetComponentsInChildren<RendererWrapper>(true))
                 {
                     r.enabled = false;
@@ -109,23 +109,35 @@ namespace SuperHotDarkMode
         void levelModifier()
         {
             //sHGUIappbase.Redraw(0, 0);
-            
+
 
             //r.material = new Material(Shader.Find("Standard"));
 
-
-            foreach (Renderer r in GameObject.FindObjectsOfType<Renderer>())
+            if (mod_enabled)
             {
-                Vector4 color = new Vector4(0, 0, 0, 1);
-                if(!r.material.shader.name.Contains("Crystal") && !r.gameObject.TryGetComponent<Crosshair>(out _))
+                foreach (Renderer r in GameObject.FindObjectsOfType<Renderer>())
                 {
-                       
-                   
-                    r.material.SetTexture("_MainTex", MainTex);
-                    
+                    Vector4 color = new Vector4(0, 0, 0, 1);
+                    if (!r.material.shader.name.Contains("Crystal") && !r.gameObject.TryGetComponent<Crosshair>(out _))
+                    {
+
+
+                        r.material.SetTexture("_MainTex", MainTex);
+
+                    }
                 }
             }
+            
         }
-        
+
+        public void SetEnabled(bool _enabled)
+        {
+            mod_enabled = _enabled;
+        }
+
+        public bool GetEnabled()
+        {
+            return mod_enabled;
+        }
     }
 }
